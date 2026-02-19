@@ -1,7 +1,8 @@
 import { getAllProducts, getCategories } from "@/lib/api";
+import { Product } from "@/types";
 import ProductList from "./ProductList";
 
-// SSG - Statically generated at build time, revalidated every hour
+// SSG - Statically generated at build time, revalidated every hour (ISR)
 export const revalidate = 3600;
 
 export const metadata = {
@@ -10,10 +11,18 @@ export const metadata = {
 };
 
 export default async function ProductsPage() {
-  const [products, categories] = await Promise.all([
-    getAllProducts(),
-    getCategories(),
-  ]);
+  let products: Product[] = [];
+  let categories: string[] = [];
+
+  try {
+    [products, categories] = await Promise.all([
+      getAllProducts(),
+      getCategories(),
+    ]);
+  } catch (error) {
+    console.error("Failed to fetch products during build:", error);
+    // Fallback: halaman akan di-generate ulang saat request pertama (ISR)
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

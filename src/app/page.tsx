@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getAllProducts } from "@/lib/api";
+import { Product } from "@/types";
 import {
   AnimatedSection,
   StaggerContainer,
@@ -11,11 +12,16 @@ import {
   FloatingOrb,
 } from "@/components/animations";
 
-// SSG - This page is statically generated at build time
+// SSG - Statically generated at build time, revalidated every hour (ISR)
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const products = await getAllProducts();
+  let products: Product[] = [];
+  try {
+    products = await getAllProducts();
+  } catch (error) {
+    console.error("Failed to fetch products during build:", error);
+  }
   const featuredProducts = products.slice(0, 4);
 
   return (
