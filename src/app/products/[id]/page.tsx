@@ -1,18 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getProductById, getAllProducts } from "@/lib/api";
+import { getProductById } from "@/lib/api";
 import AddToCartButton from "./AddToCartButton";
 
 // SSR - Force dynamic rendering for every request
 export const dynamic = "force-dynamic";
-
-// Generate static params for known product IDs (SSG for known paths)
-export async function generateStaticParams() {
-  const products = await getAllProducts();
-  return products.map((product) => ({
-    id: String(product.id),
-  }));
-}
 
 export async function generateMetadata({
   params,
